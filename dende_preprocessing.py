@@ -65,35 +65,82 @@ class MissingValueProcessor:
         """
         pass
 
-
 class Scaler:
-    """
-    Aplica transformações de escala em colunas numéricas do dataset.
-    """
-    def __init__(self, dataset: Dict[str, List[Any]]):
+    
+    def __init__(self, dataset):
+        #Dicionario de dados na memoria 
         self.dataset = dataset
+        #importando a classe statistics 
+        from dende_statistics import Statistics
+       #criação da calculadora estatistica que esta diretamente ligada aos dados 
+        self.stats = Statistics(self.dataset)
 
-    def _get_target_columns(self, columns: Set[str]) -> List[str]:
+    def _get_target_columns(self, columns):
+        #colunas especificas que forem passando vão ser convertidas para listas
+        #se não, vai pegar todas as chaves e devolver, ou seja, caso o usuario escolha alguma coluna, ela vai retornar, se não, retorna uma lista com todas
         return list(columns) if columns else list(self.dataset.keys())
 
-    def minMax_scaler(self, columns: Set[str] = None) -> Dict[str, List[Any]]:
-        """
-        Aplica a normalização Min-Max ($X_{norm} = \frac{X - X_{min}}{X_{max} - X_{min}}$)
-        nas colunas especificadas. Modifica o dataset.
+    def minMax_scaler(self, columns=None):
+        #pega a lista de colunas que vao ser modificadas
+        target_cols = self._get_target_columns(columns)
+        
+        #loop que vai passar por cada uma das colunas que foram escolhidas
+        for col in target_cols:
+            #cria uma lista temporaria apenas com valores que são números e ignora <none> ou strings, evitando erros 
+            values = [v for v in self.dataset[col] if isinstance(v, (int, float))]
+            #pula a lista caso ela esteja vazia, indo para proxima coluna
+            if not values:
+                continue
 
-        Args:
-            columns (Set[str]): Colunas para aplicar o scaler. Se vazio, tenta aplicar a todas.
-        """
-        pass
+            #descobre o maior e o menor número da coluna  
+            min_val = min(values)
+            max_val = max(values)
+            #calculo para encontrar o denominador 
+            denom = max_val - min_val
 
-    def standard_scaler(self, columns: Set[str] = None) -> Dict[str, List[Any]]:
-        """
-        Aplica a padronização Z-score ($X_{std} = \frac{X - \mu}{\sigma}$)
-        nas colunas especificadas. Modifica o dataset.
+            #define o denominador como zero se  os numeros forem iguais
+            #pro programa não crashar com uma divisão por zero, ele da mais um pulo
+            if denom == 0:
+                continue
 
-        Args:
-            columns (Set[str]): Colunas para aplicar o scaler. Se vazio, tenta aplicar a todas.
-        """
+            #substitui a coluna original por uma nova com os valores atualizados
+            ## Se o valor X for número, aplica a fórmula, se não for número, mantém o próprio X
+            self.dataset[col] = [
+                ((x - min_val) / denom) if isinstance(x, (int, float)) else x 
+                for x in self.dataset[col]
+            ]
+            # Devolve o dicionário com os dados já normalizados, entre 0 e 1
+        return self.dataset
+
+    def standard_scaler(self, columns=None):
+        #pega lista das colunas que vão ser modificadas
+        target_cols = self._get_target_columns(columns)
+        
+        #loop que passa por cada uma das colunas escolhidas
+        for col in target_cols:
+            # Tenta executar as contas abaixo e evita crash em caso de erro
+            try:
+                # # Pede a calculadora a Média da coluna atual
+                mean_val = self.stats.mean(col)
+                
+                # Pede a calculadora o Desvio Padrão da coluna atual
+                std_val = self.stats.stdev(col)
+                
+                #se o desvio padrão for zero, pula para não dividir por zero
+                if std_val == 0:
+                    continue
+                # Substitui a coluna original por uma nova lista com os valores padronizados
+                # Se X for número, aplica o Z-score. Se não for, mantém o X original.
+                self.dataset[col] = [
+                    ((x - mean_val) / std_val) if isinstance(x, (int, float)) else x 
+                    for x in self.dataset[col]
+                ]
+                #mais um pulo em caso de erros 
+            except (ZeroDivisionError, TypeError):
+                continue
+                #Retorna o Dicionario com os dados ja atualizados 
+        return self.dataset
+    
         pass
 
 class Encoder:
