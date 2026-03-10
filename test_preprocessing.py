@@ -120,6 +120,8 @@ class TestPreprocessingWith10x5Dataset(unittest.TestCase):
 
     # ==========================================
     # TESTE MÉTODO INVÁLIDO
+        with self.assertRaises(ValueError):
+            prep.encode(columns={"city"}, method="metodo_inexistente")
     # ==========================================
 
     def test_invalid_scaler_method(self):
