@@ -94,7 +94,7 @@ class TestPreprocessingWith10x5Dataset(unittest.TestCase):
     # TESTE LABEL ENCODER
     # ==========================================
 
-    def test_label_encoding(self):
+    def test_label_encoding(self): # GIO -> TESTADO -> OK
         prep = Preprocessing(copy.deepcopy(self.dataset))
         prep.fillna(value="Unknown")
 
@@ -113,9 +113,9 @@ class TestPreprocessingWith10x5Dataset(unittest.TestCase):
 
         result = prep.encode(columns={"department"}, method="oneHot")
 
-        self.assertNotIn("department", result)
+        self.assertNotIn("department",  prep.dataset) #correção, verifica o dataset agora, e não o retorno
 
-        onehot_columns = [col for col in result.keys() if col.startswith("department_")]
+        onehot_columns = [col for col in prep.dataset.keys() if col.startswith("department_")]#mesma correção aqui
         self.assertTrue(len(onehot_columns) > 0)
 
     # ==========================================

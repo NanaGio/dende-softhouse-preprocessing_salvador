@@ -103,7 +103,7 @@ class Encoder:
     def __init__(self, dataset: Dict[str, List[Any]]):
         self.dataset = dataset
 
-    def label_encode(self, columns: Set[str]) -> Dict[str, List[Any]]:
+    def label_encode(self, columns: Set[str]) -> Dict[str, List[Any]]: # GIO
         """
         Converte cada categoria em uma coluna em um número inteiro.
         Modifica o dataset.
@@ -111,9 +111,20 @@ class Encoder:
         Args:
             columns (Set[str]): Colunas categóricas para codificar.
         """
-        pass
+        values_modificados = {}
 
-    def oneHot_encode(self, columns: Set[str]) -> Dict[str, List[Any]]:
+        for coluna in columns:
+            values_modificado = self.dataset[coluna]#coletando a coluna
+            values_sem_nulo = ["NULL" if valor is None else valor for valor in values_modificado]#substituindo valores nulos por null
+            valores_unicos = sorted(set(values_sem_nulo))#colocando em ordem crescente, e separando por valores unicos
+            valores_transformados = { valor: indice for indice,  valor in enumerate(valores_unicos)}#orgazinando os indices da coluna com enumerate
+            coluna_convertida = [valores_transformados[valor] for valor in values_sem_nulo]#substituindo cada valor string por int
+            self.dataset[coluna] = coluna_convertida#injetando a transformação na coluna novamente
+            values_modificados[coluna] = coluna_convertida#transformação final com variável
+
+        return values_modificados
+
+    def oneHot_encode(self, columns: Set[str]) -> Dict[str, List[Any]]: #GIO
         """
         Cria novas colunas binárias para cada categoria nas colunas especificadas (One-Hot Encoding).
         Modifica o dataset adicionando e removendo colunas.
@@ -121,8 +132,28 @@ class Encoder:
         Args:
             columns (Set[str]): Colunas categóricas para codificar.
         """
-        pass
+        categorias = {}
 
+        for coluna in columns:
+            categorias_in_coluna = self.dataset[coluna]#identificando as categorias na coluna
+            categorias_sem_nulo = ["NULL" if valor is None else valor for valor in categorias_in_coluna]#retirando os nulos
+            categorias_unicas = sorted(set(categorias_sem_nulo))#separando as únicas
+            categorias[coluna] = categorias_unicas#substituindo
+
+            #criando a categoria especifica f"{x}_{x}"
+            for categoria in categorias_unicas:
+                nova_coluna = f"{coluna}_{categoria}" #
+                self.dataset[nova_coluna] = [0] * len(self.dataset[coluna])
+
+                #preenchendo com 1, onde a categoria coincide
+                for i in range(len(self.dataset[coluna])):
+                    if categorias_sem_nulo[i] == categoria:
+                        self.dataset[nova_coluna][i] = 1
+
+            #deletando a coluna primaria
+            del self.dataset[coluna]
+
+        return categorias
 
 class Preprocessing:
     """
