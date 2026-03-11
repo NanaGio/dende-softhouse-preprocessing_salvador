@@ -24,7 +24,28 @@ class MissingValueProcessor:
         Returns:
             Dict[str, List[Any]]: Um dicionário representando as linhas com valores nulos.
         """
-        pass
+
+        # Pega as colunas
+        columns = self._get_target_columns(columns)
+        # Pega a quantidade de linhas por coluna
+        row_count = len(next(iter(self.dataset.values())))
+        # Variável para Linhas selecionadas
+        selected_rows = []
+
+        # Verifica quais linhas tem algum dado com none
+        for i in range(row_count):
+            if any(self.dataset[col][i] is None for col in columns):
+                selected_rows.append(i)
+        # cria novo dataset vazio com base no dataset original
+        result = {col: [] for col in self.dataset}
+
+        # Adiciona os dados selecionados
+        for i in selected_rows:
+            for col in self.dataset:
+                result[col].append(self.dataset[col][i])
+
+        return result
+        
 
     def notna(self, columns: Set[str] = None) -> Dict[str, List[Any]]:
         """
@@ -38,7 +59,32 @@ class MissingValueProcessor:
         Returns:
             Dict[str, List[Any]]: Um dicionário representando as linhas sem valores nulos.
         """
-        pass
+        
+        # Pega as colunas
+        columns = self._get_target_columns(columns)
+        # Pega a quantidade de linhas por coluna
+        row_count = len(next(iter(self.dataset.values())))
+        # Variável para Linhas selecionadas
+        selected_rows = []
+
+        # Verifica quais linhas não tem nenhum dado com none
+        for i in range(row_count):
+            # CORREÇÃO: Para não possuir NENHUM nulo, TODOS (all) devem ser "is not None"
+            if all(self.dataset[col][i] is not None for col in columns): # Nota: is not None
+                pass
+            # Reescrita da linha acima para clareza lógica:
+            if all(self.dataset[col][i] is not None for col in columns):
+                selected_rows.append(i)
+                
+        # cria novo dataset vazio com base no dataset original
+        result = {col: [] for col in self.dataset}
+
+        # Adiciona os dados selecionados
+        for i in selected_rows:
+            for col in self.dataset:
+                result[col].append(self.dataset[col][i])
+
+        return result
 
     def fillna(self, columns: Set[str] = None, value: Any = 0) -> Dict[str, List[Any]]:
         """
@@ -53,7 +99,16 @@ class MissingValueProcessor:
         Returns:
             Preprocessing: A própria instância (self) para permitir encadeamento.
         """
-        pass
+        
+        # pega as colunas
+        columns = self._get_target_columns(columns)
+        # Preenche valores Nones com value
+        for col in columns:
+            for i, v in enumerate(self.dataset[col]):
+                if v is None: 
+                    self.dataset[col][i] = value
+
+        return self.dataset
 
     def dropna(self, columns: Set[str] = None) -> Dict[str, List[Any]]:
         """
@@ -63,7 +118,31 @@ class MissingValueProcessor:
         Args:
             columns (Set[str]): Colunas a serem verificadas para valores nulos. Se vazio, todas as colunas são verificadas.
         """
-        pass
+        # Pega as colunas
+        columns = self._get_target_columns(columns)
+        # Pega a quantidade de linhas por coluna
+        row_count = len(next(iter(self.dataset.values())))
+        # cria variável que recebe os dados
+        keep_rows = []
+        # Verifica quais linhas não tem nenhum dado com none
+        for i in range(row_count):
+            if all(self.dataset[col][i] is not None for col in columns):
+                keep_rows.append(i)
+        # cria novo dataset vazio com base no dataset original
+        new_dataset = {col: [] for col in self.dataset}
+        # Adiciona os dados selecionados
+        for i in keep_rows:
+            for col in self.dataset:
+                new_dataset[col].append(self.dataset[col][i])
+        
+        # altera o dataset original com os dados selecionados
+        # CORREÇÃO: Modifica o conteúdo das listas originais (in-place) para refletir fora da classe
+        for col in self.dataset:
+            self.dataset[col][:] = new_dataset[col]
+
+        return self.dataset
+
+
 
 class Scaler:
     
