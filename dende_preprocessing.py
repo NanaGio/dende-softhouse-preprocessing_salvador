@@ -69,8 +69,13 @@ class MissingValueProcessor:
 
         # Verifica quais linhas não tem nenhum dado com none
         for i in range(row_count):
-            if any(self.dataset[col][i] is not None for col in columns):
+            # CORREÇÃO: Para não possuir NENHUM nulo, TODOS (all) devem ser "is not None"
+            if all(self.dataset[col][i] is not None for col in columns): # Nota: is not None
+                pass
+            # Reescrita da linha acima para clareza lógica:
+            if all(self.dataset[col][i] is not None for col in columns):
                 selected_rows.append(i)
+                
         # cria novo dataset vazio com base no dataset original
         result = {col: [] for col in self.dataset}
 
@@ -129,8 +134,11 @@ class MissingValueProcessor:
         for i in keep_rows:
             for col in self.dataset:
                 new_dataset[col].append(self.dataset[col][i])
-        # altera o dataset original com os dados sleecionados
-        self.dataset = new_dataset
+        
+        # altera o dataset original com os dados selecionados
+        # CORREÇÃO: Modifica o conteúdo das listas originais (in-place) para refletir fora da classe
+        for col in self.dataset:
+            self.dataset[col][:] = new_dataset[col]
 
         return self.dataset
 
