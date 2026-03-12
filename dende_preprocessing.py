@@ -137,7 +137,7 @@ class Encoder:
         for coluna in columns:
             categorias_in_coluna = self.dataset[coluna]#identificando as categorias na coluna
             categorias_sem_nulo = ["NULL" if valor is None else valor for valor in categorias_in_coluna]#retirando os nulos
-            categorias_unicas = sorted(set(categorias_sem_nulo))#separando as únicas
+            categorias_unicas = set(categorias_sem_nulo)#separando as únicas
             categorias[coluna] = categorias_unicas#substituindo
 
             #criando a categoria especifica f"{x}_{x}"
