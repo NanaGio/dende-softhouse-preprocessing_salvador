@@ -24,28 +24,7 @@ class MissingValueProcessor:
         Returns:
             Dict[str, List[Any]]: Um dicionário representando as linhas com valores nulos.
         """
-
-        # Pega as colunas
-        columns = self._get_target_columns(columns)
-        # Pega a quantidade de linhas por coluna
-        row_count = len(next(iter(self.dataset.values())))
-        # Variável para Linhas selecionadas
-        selected_rows = []
-
-        # Verifica quais linhas tem algum dado com none
-        for i in range(row_count):
-            if any(self.dataset[col][i] is None for col in columns):
-                selected_rows.append(i)
-        # cria novo dataset vazio com base no dataset original
-        result = {col: [] for col in self.dataset}
-
-        # Adiciona os dados selecionados
-        for i in selected_rows:
-            for col in self.dataset:
-                result[col].append(self.dataset[col][i])
-
-        return result
-        
+        pass
 
     def notna(self, columns: Set[str] = None) -> Dict[str, List[Any]]:
         """
@@ -59,32 +38,7 @@ class MissingValueProcessor:
         Returns:
             Dict[str, List[Any]]: Um dicionário representando as linhas sem valores nulos.
         """
-        
-        # Pega as colunas
-        columns = self._get_target_columns(columns)
-        # Pega a quantidade de linhas por coluna
-        row_count = len(next(iter(self.dataset.values())))
-        # Variável para Linhas selecionadas
-        selected_rows = []
-
-        # Verifica quais linhas não tem nenhum dado com none
-        for i in range(row_count):
-            # CORREÇÃO: Para não possuir NENHUM nulo, TODOS (all) devem ser "is not None"
-            if all(self.dataset[col][i] is not None for col in columns): # Nota: is not None
-                pass
-            # Reescrita da linha acima para clareza lógica:
-            if all(self.dataset[col][i] is not None for col in columns):
-                selected_rows.append(i)
-                
-        # cria novo dataset vazio com base no dataset original
-        result = {col: [] for col in self.dataset}
-
-        # Adiciona os dados selecionados
-        for i in selected_rows:
-            for col in self.dataset:
-                result[col].append(self.dataset[col][i])
-
-        return result
+        pass
 
     def fillna(self, columns: Set[str] = None, value: Any = 0) -> Dict[str, List[Any]]:
         """
@@ -99,16 +53,7 @@ class MissingValueProcessor:
         Returns:
             Preprocessing: A própria instância (self) para permitir encadeamento.
         """
-        
-        # pega as colunas
-        columns = self._get_target_columns(columns)
-        # Preenche valores Nones com value
-        for col in columns:
-            for i, v in enumerate(self.dataset[col]):
-                if v is None: 
-                    self.dataset[col][i] = value
-
-        return self.dataset
+        pass
 
     def dropna(self, columns: Set[str] = None) -> Dict[str, List[Any]]:
         """
@@ -118,109 +63,102 @@ class MissingValueProcessor:
         Args:
             columns (Set[str]): Colunas a serem verificadas para valores nulos. Se vazio, todas as colunas são verificadas.
         """
-        # Pega as colunas
-        columns = self._get_target_columns(columns)
-        # Pega a quantidade de linhas por coluna
-        row_count = len(next(iter(self.dataset.values())))
-        # cria variável que recebe os dados
-        keep_rows = []
-        # Verifica quais linhas não tem nenhum dado com none
-        for i in range(row_count):
-            if all(self.dataset[col][i] is not None for col in columns):
-                keep_rows.append(i)
-        # cria novo dataset vazio com base no dataset original
-        new_dataset = {col: [] for col in self.dataset}
-        # Adiciona os dados selecionados
-        for i in keep_rows:
-            for col in self.dataset:
-                new_dataset[col].append(self.dataset[col][i])
-        
-        # altera o dataset original com os dados selecionados
-        # CORREÇÃO: Modifica o conteúdo das listas originais (in-place) para refletir fora da classe
-        for col in self.dataset:
-            self.dataset[col][:] = new_dataset[col]
-
-        return self.dataset
-
-
+        pass
 
 class Scaler:
     
-    def __init__(self, dataset):
-        #Dicionario de dados na memoria 
+    def __init__(self, dataset: Dict[str, List[Any]]):
         self.dataset = dataset
-        #importando a classe statistics 
-        from dende_statistics import Statistics
-       #criação da calculadora estatistica que esta diretamente ligada aos dados 
-        self.stats = Statistics(self.dataset)
-
-    def _get_target_columns(self, columns):
-        #colunas especificas que forem passando vão ser convertidas para listas
-        #se não, vai pegar todas as chaves e devolver, ou seja, caso o usuario escolha alguma coluna, ela vai retornar, se não, retorna uma lista com todas
+        
+    def _get_target_columns (self, columns: Set[str]) -> List[str]:
         return list(columns) if columns else list(self.dataset.keys())
+    #Função para retornar as colunas que o utilizador  escolher e retorna todas caso nenhuma seja escolhida
+    
+    def _is_number(self, value: Any) -> bool:
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    #Verificação de segurança para avaliar se o valor é realmente um numero, garantindo tambem que esse numero nao seja um booleano 
+    
+    def minMax_scaler(self, columns: Set[str] = None) -> Dict[str, List[Any]]:
+        #Define o que vai ser recebido e devolvido 
+        target_columns = self._get_target_columns(columns)  
+        #Chama a função get target para saber o que vai ser recebido de fato
 
-    def minMax_scaler(self, columns=None):
-        #pega a lista de colunas que vao ser modificadas
-        target_cols = self._get_target_columns(columns)
-        
-        #loop que vai passar por cada uma das colunas que foram escolhidas
-        for col in target_cols:
-            #cria uma lista temporaria apenas com valores que são números e ignora <none> ou strings, evitando erros 
-            values = [v for v in self.dataset[col] if isinstance(v, (int, float))]
-            #pula a lista caso ela esteja vazia, indo para proxima coluna
-            if not values:
-                continue
-
-            #descobre o maior e o menor número da coluna  
-            min_val = min(values)
-            max_val = max(values)
-            #calculo para encontrar o denominador 
-            denom = max_val - min_val
-
-            #define o denominador como zero se  os numeros forem iguais
-            #pro programa não crashar com uma divisão por zero, ele da mais um pulo
-            if denom == 0:
-                continue
-
-            #substitui a coluna original por uma nova com os valores atualizados
-            ## Se o valor X for número, aplica a fórmula, se não for número, mantém o próprio X
-            self.dataset[col] = [
-                ((x - min_val) / denom) if isinstance(x, (int, float)) else x 
-                for x in self.dataset[col]
-            ]
-            # Devolve o dicionário com os dados já normalizados, entre 0 e 1
-        return self.dataset
-
-    def standard_scaler(self, columns=None):
-        #pega lista das colunas que vão ser modificadas
-        target_cols = self._get_target_columns(columns)
-        
-        #loop que passa por cada uma das colunas escolhidas
-        for col in target_cols:
-            # Tenta executar as contas abaixo e evita crash em caso de erro
-            try:
-                # # Pede a calculadora a Média da coluna atual
-                mean_val = self.stats.mean(col)
+    
+        #Laço de repetição, passa por cada coluna e verifica se ela de fato existe nos dados
+        for col in target_columns:
+            if col in self.dataset:
+                #Cria uma lista temporarias so com numeros reais, ignorando textos e nones 
+                values = [v for v in self.dataset[col] if self._is_number(v)]
+                #Se a coluna so tiver texto, a lista VALUES fica vazia, e o codigo pula pra proxima coluna 
+                if not values:
+                    continue 
                 
-                # Pede a calculadora o Desvio Padrão da coluna atual
-                std_val = self.stats.stdev(col)
+                #Descobre o maior e menor número de cada coluna, e busca o denominador subtraindo o menor valor do maior
+                min_val = min(values)
+                max_val = max(values)
+                denom = max_val - min_val
+
+               #cria uma nova lista parar guardar os valores novos
+                nova_lista = []
+                #le a coluna original (definida como x ) linha a linha 
+                for x in self.dataset[col]:
+                    #Se X for realmente um número e não for 0, realiza a operação
+                    #Caso seja 0, ele apenas vai guardar o valor 0.0 na lista
+                    #Se não for um número real ou for um NONE apenas repete na lista sem alterações 
+                    if self._is_number(x):
+                        if denom == 0:
+                            nova_lista.append(0.0)
+                        else: 
+                            nova_lista.append((x - min_val) / denom)
+                    else:
+                        nova_lista.append(x)
+                        
+                self.dataset[col] = nova_lista
                 
-                #se o desvio padrão for zero, pula para não dividir por zero
-                if std_val == 0:
-                    continue
-                # Substitui a coluna original por uma nova lista com os valores padronizados
-                # Se X for número, aplica o Z-score. Se não for, mantém o X original.
-                self.dataset[col] = [
-                    ((x - mean_val) / std_val) if isinstance(x, (int, float)) else x 
-                    for x in self.dataset[col]
-                ]
-                #mais um pulo em caso de erros 
-            except (ZeroDivisionError, TypeError):
-                continue
-                #Retorna o Dicionario com os dados ja atualizados 
+        #retorna os dados atualizados quando as colunas acabarem
         return self.dataset
     
-        pass
+            
+    def standard_scaler(self, columns: Set[str] = None) -> Dict[str, List[Any]]:
+        target_cols = self._get_target_columns(columns)
+        #mais uma vez busca as colunas que vao ser usadas 
+
+        #olha pra cada coluna, mais uma vez filtrando numeros  e saltando para proxima coluna se não houver
+        for col in target_cols:
+            if col in self.dataset:
+                values = [v for v in self.dataset[col] if self._is_number(v)]
+                if not values: 
+                    continue 
+
+                #faz o calculo do desvio padrão
+                n = len(values) #len busca o número de valores existentes
+                mean_val = sum(values) / n #soma todos e divide pela quantidade de valores
+                #calculo de variancia, pega cada número, tira a média e eleva ao quadrado 
+                soma_quadrados = sum((x - mean_val) ** 2 for x in values)
+                #depois eleva a 0.5 para buscar a raiz quadrada da variância(que é o desvio padrão)
+                std_val = (soma_quadrados / n) ** 0.5
+
+                #cria nova lista 
+                nova_lista = []
+                #mais uma vez passando linha por linha na coluna original
+                for x in self.dataset[col]:
+                    if self._is_number(x):
+                        #verifica mais uma vez se é número e se não é 0
+                        if std_val == 0:
+                            nova_lista.append(0.0)
+                        else: 
+                            #Fórmula = (valor-media)/desvio_padrao
+                            nova_lista.append((x - mean_val) / std_val)
+                    else: 
+                        #Mantém textos e NONES sem alteração 
+                        nova_lista.append(x)
+
+                #Atualiza a coluna no dicionário    
+                self.dataset[col] = nova_lista
+        #retorna a lista pronta 
+        return self.dataset
+
+   
 
 class Encoder:
     """
