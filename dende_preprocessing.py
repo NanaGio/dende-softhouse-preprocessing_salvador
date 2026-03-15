@@ -1,5 +1,6 @@
 from dende_statistics import Statistics
 from typing import Dict, List, Set, Any
+import copy
 
 class MissingValueProcessor:
     """
@@ -83,12 +84,13 @@ class Scaler:
         target_columns = self._get_target_columns(columns)  
         #Chama a função get target para saber o que vai ser recebido de fato
 
+        dataset_processado = copy.deepcopy(self.dataset)
     
         #Laço de repetição, passa por cada coluna e verifica se ela de fato existe nos dados
         for col in target_columns:
-            if col in self.dataset:
+            if col in dataset_processado:
                 #Cria uma lista temporarias so com numeros reais, ignorando textos e nones 
-                values = [v for v in self.dataset[col] if self._is_number(v)]
+                values = [v for v in dataset_processado[col] if self._is_number(v)]
                 #Se a coluna so tiver texto, a lista VALUES fica vazia, e o codigo pula pra proxima coluna 
                 if not values:
                     continue 
@@ -98,10 +100,10 @@ class Scaler:
                 max_val = max(values)
                 denom = max_val - min_val
 
-               #cria uma nova lista parar guardar os valores novos
+                #cria uma nova lista parar guardar os valores novos
                 nova_lista = []
                 #le a coluna original (definida como x ) linha a linha 
-                for x in self.dataset[col]:
+                for x in dataset_processado[col]:
                     #Se X for realmente um número e não for 0, realiza a operação
                     #Caso seja 0, ele apenas vai guardar o valor 0.0 na lista
                     #Se não for um número real ou for um NONE apenas repete na lista sem alterações 
@@ -113,20 +115,22 @@ class Scaler:
                     else:
                         nova_lista.append(x)
                         
-                self.dataset[col] = nova_lista
+                dataset_processado[col] = nova_lista
                 
         #retorna os dados atualizados quando as colunas acabarem
-        return self.dataset
+        return dataset_processado
     
             
     def standard_scaler(self, columns: Set[str] = None) -> Dict[str, List[Any]]:
         target_cols = self._get_target_columns(columns)
         #mais uma vez busca as colunas que vao ser usadas 
 
+        dataset_processado = copy.deepcopy(self.dataset)
+
         #olha pra cada coluna, mais uma vez filtrando numeros  e saltando para proxima coluna se não houver
         for col in target_cols:
-            if col in self.dataset:
-                values = [v for v in self.dataset[col] if self._is_number(v)]
+            if col in dataset_processado:
+                values = [v for v in dataset_processado[col] if self._is_number(v)]
                 if not values: 
                     continue 
 
@@ -141,7 +145,7 @@ class Scaler:
                 #cria nova lista 
                 nova_lista = []
                 #mais uma vez passando linha por linha na coluna original
-                for x in self.dataset[col]:
+                for x in dataset_processado[col]:
                     if self._is_number(x):
                         #verifica mais uma vez se é número e se não é 0
                         if std_val == 0:
@@ -154,10 +158,9 @@ class Scaler:
                         nova_lista.append(x)
 
                 #Atualiza a coluna no dicionário    
-                self.dataset[col] = nova_lista
+                dataset_processado[col] = nova_lista
         #retorna a lista pronta 
-        return self.dataset
-
+        return dataset_processado
    
 
 class Encoder:
