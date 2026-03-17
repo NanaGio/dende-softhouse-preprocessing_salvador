@@ -69,10 +69,6 @@ class MissingValueProcessor:
 
         # Verifica quais linhas não tem nenhum dado com none
         for i in range(row_count):
-            # CORREÇÃO: Para não possuir NENHUM nulo, TODOS (all) devem ser "is not None"
-            if all(self.dataset[col][i] is not None for col in columns): # Nota: is not None
-                pass
-            # Reescrita da linha acima para clareza lógica:
             if all(self.dataset[col][i] is not None for col in columns):
                 selected_rows.append(i)
                 
@@ -223,7 +219,22 @@ class Preprocessing:
         Valida se todas as listas (colunas) no dicionário do dataset
         têm o mesmo comprimento.
         """
-        pass
+    
+         # Pega o tamanho de cada coluna (lista) do dataset
+        lengths = [len(col) for col in self.dataset.values()]
+        
+        # Se o dataset estiver vazio, não há o que validar
+        if not lengths:
+            return  # Dataset vazio é considerado válido
+
+        # Define o tamanho esperado com base na primeira coluna
+        first_length = lengths[0]
+
+        # Verifica se todas as colunas possuem o mesmo tamanho
+        for l in lengths:
+            # Se encontrar uma coluna com tamanho diferente, lança erro
+            if l != first_length:
+                raise ValueError("Todas as colunas devem ter o mesmo número de linhas.")
 
     def isna(self, columns: Set[str] = None) -> Dict[str, List[Any]]:
         """
