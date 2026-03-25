@@ -1,0 +1,222 @@
+==========================================================================================
+RELATÓRIO DE ANÁLISE EXPLORATÓRIA - SPOTIFY DATASET
+==========================================================================================
+
+ANÁLISE REALIZADA COM CLASSE STATISTICS (dende_statistics.py)
+------------------------------------------------------------------------------------------
+Métodos utilizados:
+  • mean()     → Média aritmética
+  • median()   → Mediana
+  • mode()     → Moda
+  • variance() → Variância populacional
+  • stdev()    → Desvio padrão populacional
+  • itemset()  → Valores únicos
+  • covariance() → Covariância entre colunas
+  • absolute_frequency() → Frequência absoluta (NOVO!)
+  • relative_frequency() → Frequência relativa (NOVO!)
+  • cumulative_frequency() → Frequência acumulada (NOVO!)
+------------------------------------------------------------------------------------------
+
+
+==========================================================================================
+ESTATÍSTICAS DESCRITIVAS POR COLUNA
+==========================================================================================
+
+────────────────────────────────────────────────────────────
+COLUNA: track_popularity
+────────────────────────────────────────────────────────────
+  MÉDIA                    : 52.3562
+  MEDIANA                  : 58.0
+  MODA                     : [0.0]
+  DESVIO PADRÃO            : 23.8147
+  VARIÂNCIA                : 567.1394
+  MÍNIMO                   : 0.0
+  MÁXIMO                   : 99.0
+  AMPLITUDE                : 99.0
+  VALORES ÚNICOS           : 98
+  FREQUÊNCIA ABSOLUTA (TOP5):
+    0.0: 503
+    62.0: 195
+    71.0: 190
+    67.0: 188
+    70.0: 182
+  FREQUÊNCIA RELATIVA (TOP5):
+    0.0: 5.86%
+    62.0: 2.27%
+    71.0: 2.21%
+    67.0: 2.19%
+    70.0: 2.12%
+  FREQ ACUMULADA FINAL     : 8582
+  FREQ ACUMULADA REL FINAL : 100.0
+  TOTAL AMOSTRAS           : 8582
+
+────────────────────────────────────────────────────────────
+COLUNA: artist_popularity
+────────────────────────────────────────────────────────────
+  MÉDIA                    : 69.73
+  MEDIANA                  : 74.0
+  MODA                     : [88.0]
+  DESVIO PADRÃO            : 19.6448
+  VARIÂNCIA                : 385.9195
+  MÍNIMO                   : 0.0
+  MÁXIMO                   : 100.0
+  AMPLITUDE                : 100.0
+  VALORES ÚNICOS           : 96
+  FREQUÊNCIA ABSOLUTA (TOP5):
+    88.0: 428
+    81.0: 365
+    85.0: 328
+    100.0: 324
+    83.0: 279
+  FREQUÊNCIA RELATIVA (TOP5):
+    88.0: 4.99%
+    81.0: 4.25%
+    85.0: 3.82%
+    100.0: 3.78%
+    83.0: 3.25%
+  FREQ ACUMULADA FINAL     : 8582
+  FREQ ACUMULADA REL FINAL : 100.0
+  TOTAL AMOSTRAS           : 8582
+
+────────────────────────────────────────────────────────────
+COLUNA: artist_followers
+────────────────────────────────────────────────────────────
+  MÉDIA                    : 24034719.3343
+  MEDIANA                  : 6105547.0
+  MODA                     : [145396321.0]
+  DESVIO PADRÃO            : 38029589.1028
+  VARIÂNCIA                : 1446249647328220.2
+  MÍNIMO                   : 0.0
+  MÁXIMO                   : 145542136.0
+  AMPLITUDE                : 145542136.0
+  VALORES ÚNICOS           : 3740
+  FREQUÊNCIA ABSOLUTA (TOP5):
+    145396321.0: 137
+    145489371.0: 90
+    145443567.0: 85
+    112918137.0: 60
+    51773650.0: 44
+  FREQUÊNCIA RELATIVA (TOP5):
+    145396321.0: 1.6%
+    145489371.0: 1.05%
+    145443567.0: 0.99%
+    112918137.0: 0.7%
+    51773650.0: 0.51%
+  FREQ ACUMULADA FINAL     : 8582
+  FREQ ACUMULADA REL FINAL : 100.0
+  TOTAL AMOSTRAS           : 8582
+
+────────────────────────────────────────────────────────────
+COLUNA: album_total_tracks
+────────────────────────────────────────────────────────────
+  MÉDIA                    : 13.7894
+  MEDIANA                  : 13.0
+  MODA                     : [1.0]
+  DESVIO PADRÃO            : 11.8864
+  VARIÂNCIA                : 141.2874
+  MÍNIMO                   : 1.0
+  MÁXIMO                   : 181.0
+  AMPLITUDE                : 180.0
+  VALORES ÚNICOS           : 82
+  FREQUÊNCIA ABSOLUTA (TOP5):
+    1.0: 1627
+    12.0: 657
+    16.0: 534
+    13.0: 528
+    14.0: 500
+  FREQUÊNCIA RELATIVA (TOP5):
+    1.0: 18.96%
+    12.0: 7.66%
+    16.0: 6.22%
+    13.0: 6.15%
+    14.0: 5.83%
+  FREQ ACUMULADA FINAL     : 8582
+  FREQ ACUMULADA REL FINAL : 100.0
+  TOTAL AMOSTRAS           : 8582
+
+────────────────────────────────────────────────────────────
+COLUNA: track_number
+────────────────────────────────────────────────────────────
+  MÉDIA                    : 5.7725
+  MEDIANA                  : 4.0
+  MODA                     : [1.0]
+  DESVIO PADRÃO            : 6.0524
+  VARIÂNCIA                : 36.632
+  MÍNIMO                   : 1.0
+  MÁXIMO                   : 102.0
+  AMPLITUDE                : 101.0
+  VALORES ÚNICOS           : 54
+  FREQUÊNCIA ABSOLUTA (TOP5):
+    1.0: 2708
+    2.0: 814
+    3.0: 686
+    4.0: 564
+    5.0: 480
+  FREQUÊNCIA RELATIVA (TOP5):
+    1.0: 31.55%
+    2.0: 9.48%
+    3.0: 7.99%
+    4.0: 6.57%
+    5.0: 5.59%
+  FREQ ACUMULADA FINAL     : 8582
+  FREQ ACUMULADA REL FINAL : 100.0
+  TOTAL AMOSTRAS           : 8582
+
+==========================================================================================
+ANÁLISE DE COVARIÂNCIA
+==========================================================================================
+
+------------------------------------------------------------
+track_popularity  x  artist_popularity
+Covariância: 218.4337
+→ Relação POSITIVA
+
+------------------------------------------------------------
+track_popularity  x  artist_followers
+Covariância: 210130955.0526
+→ Relação POSITIVA
+
+------------------------------------------------------------
+track_popularity  x  album_total_tracks
+Covariância: -15.1333
+→ Relação NEGATIVA
+
+------------------------------------------------------------
+track_popularity  x  track_number
+Covariância: -4.1097
+→ Relação NEGATIVA
+
+------------------------------------------------------------
+artist_popularity  x  artist_followers
+Covariância: 474831589.8869
+→ Relação POSITIVA
+
+------------------------------------------------------------
+artist_popularity  x  album_total_tracks
+Covariância: 46.546
+→ Relação POSITIVA
+
+------------------------------------------------------------
+artist_popularity  x  track_number
+Covariância: 22.6736
+→ Relação POSITIVA
+
+------------------------------------------------------------
+artist_followers  x  album_total_tracks
+Covariância: 83047087.0374
+→ Relação POSITIVA
+
+------------------------------------------------------------
+artist_followers  x  track_number
+Covariância: 51214980.0138
+→ Relação POSITIVA
+
+------------------------------------------------------------
+album_total_tracks  x  track_number
+Covariância: 37.4148
+→ Relação POSITIVA
+
+==========================================================================================
+FIM DO RELATÓRIO
+Gerado em: 10/03/2026 22:03:16
+==========================================================================================
